@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MarketUI Pro</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+background:#f3f4f6;
+color:#111;
+}
+
+/* HEADER */
+
+header{
+background:#131921;
+color:white;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:14px 25px;
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+.logo{
+font-size:22px;
+font-weight:800;
+color:#ff9900;
+padding-right: 15px;
+}
+
+nav{
+display:flex;
+gap:18px;
+}
+
+nav a{
+color:white;
+text-decoration:none;
+font-size:14px;
+opacity:.85;
+}
+
+nav a:hover{
+opacity:1;
+}
+
+.search{
+flex:1;
+margin:0 20px;
+display:flex;
+}
+
+.search input{
+width:100%;
+padding:10px;
+border:none;
+outline:none;
+border-radius:4px 0 0 4px;
+}
+
+.search button{
+background:#febd69;
+border:none;
+padding:10px 14px;
+cursor:pointer;
+border-radius:0 4px 4px 0;
+}
+
+.cart{
+position:relative;
+cursor:pointer;
+font-size:22px;
+color:white;
+}
+
+.badge{
+position:absolute;
+top:-8px;
+right:-10px;
+background:#f90;
+width:20px;
+height:20px;
+font-size:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:50%;
+}
+
+/* LAYOUT */
+
+.container{
+display:flex;
+max-width:1400px;
+margin:auto;
+padding:20px;
+gap:20px;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:220px;
+background:white;
+padding:15px;
+border-radius:10px;
+height:fit-content;
+}
+
+.sidebar h3{
+margin-bottom:10px;
+}
+
+.sidebar div{
+margin:8px 0;
+cursor:pointer;
+color:#444;
+}
+
+.price-filter{
+margin-top:25px;
+padding-top:15px;
+border-top:1px solid #eee;
+}
+
+.price-filter input{
+width:100%;
+cursor:pointer;
+margin:10px 0;
+}
+
+.price-filter p{
+font-size:14px;
+color:#444;
+}
+
+/* PRODUCTS */
+
+.products{
+flex:1;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+
+/* IMPORTANT: padding top cerut */
+padding-top:10px;
+}
+
+.product{
+background:white;
+border-radius:10px;
+padding:10px;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+transition:.2s;
+}
+
+.product:hover{
+transform:translateY(-4px);
+}
+
+.product img{
+width:100%;
+height:180px;
+object-fit:cover;
+border-radius:8px;
+}
+
+.price{
+color:#b12704;
+font-size:18px;
+margin:6px 0;
+}
+
+.btn{
+width:100%;
+padding:10px;
+border:none;
+background:#ffd814;
+cursor:pointer;
+border-radius:6px;
+}
+
+.btn:hover{
+background:#f7ca00;
+}
+
+/* CART */
+
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.5);
+opacity:0;
+pointer-events:none;
+transition:.3s;
+z-index:998;
+}
+
+.overlay.active{
+opacity:1;
+pointer-events:auto;
+}
+
+.cart-box{
+position:fixed;
+right:-420px;
+top:0;
+width:380px;
+height:100%;
+background:white;
+padding:70px 20px 20px; /* <-- padding top FIX */
+transition:.3s;
+overflow:auto;
+z-index:999;
+}
+
+.cart-box.open{
+right:0;
+}
+
+.close{
+position:absolute;
+top:20px;
+right:20px;
+font-size:26px;
+cursor:pointer;
+}
+
+.item{
+display:flex;
+justify-content:space-between;
+padding:12px 0;
+border-bottom:1px solid #eee;
+}
+
+.remove{
+background:red;
+border:none;
+color:white;
+padding:5px 10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.total{
+margin-top:20px;
+font-size:20px;
+font-weight:bold;
+}
+
+/* FOOTER */
+
+footer{
+margin-top:40px;
+background:#131921;
+color:white;
+text-align:center;
+padding:30px;
+font-size:14px;
+opacity:.9;
+}
+
+/* HERO SLIDER */
+
+.hero-slider{
+position:relative;
+max-width:1400px;
+height:420px;
+margin:20px auto;
+overflow:hidden;
+border-radius:14px;
+box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+
+.slides{
+width:100%;
+height:100%;
+position:relative;
+}
+
+.slide{
+position:absolute;
+width:100%;
+height:100%;
+opacity:0;
+transition:opacity .5s ease;
+}
+
+.slide.active{
+opacity:1;
+z-index:1;
+}
+
+.slide img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.caption{
+position:absolute;
+left:60px;
+top:50%;
+transform:translateY(-50%);
+background:rgba(0,0,0,.45);
+padding:25px;
+border-radius:12px;
+color:white;
+max-width:420px;
+}
+
+.caption h1{
+font-size:42px;
+margin-bottom:10px;
+}
+
+.caption p{
+font-size:18px;
+opacity:.95;
+}
+
+.prev,
+.next{
+position:absolute;
+top:50%;
+transform:translateY(-50%);
+background:rgba(0,0,0,.5);
+color:white;
+border:none;
+width:50px;
+height:50px;
+cursor:pointer;
+font-size:24px;
+border-radius:50%;
+z-index:10;
+}
+
+.prev{
+left:20px;
+}
+
+.next{
+right:20px;
+}
+
+.prev:hover,
+.next:hover{
+background:rgba(0,0,0,.75);
+}
+
+
+/* PRODUCT PAGE */
+
+.product-modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.6);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:2000;
+padding:20px;
+}
+
+.product-modal.active{
+display:flex;
+}
+
+.product-page{
+background:white;
+width:100%;
+max-width:1100px;
+border-radius:14px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:30px;
+padding:30px;
+position:relative;
+animation:show .25s ease;
+}
+
+@keyframes show{
+from{
+transform:scale(.95);
+opacity:0;
+}
+to{
+transform:scale(1);
+opacity:1;
+}
+}
+
+.product-left img{
+width:100%;
+height:500px;
+object-fit:cover;
+border-radius:12px;
+}
+
+.product-right{
+display:flex;
+flex-direction:column;
+justify-content:center;
+}
+
+.product-right h1{
+font-size:38px;
+margin-bottom:15px;
+}
+
+.product-price{
+font-size:30px;
+color:#b12704;
+margin-bottom:20px;
+font-weight:bold;
+}
+
+.product-desc{
+line-height:1.7;
+color:#555;
+margin-bottom:25px;
+}
+
+.buy-btn{
+padding:14px;
+border:none;
+background:#ffd814;
+border-radius:8px;
+font-size:17px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.buy-btn:hover{
+background:#f7ca00;
+}
+
+.close-product{
+position:absolute;
+top:15px;
+right:20px;
+font-size:32px;
+cursor:pointer;
+}
+
+@media(max-width:900px){
+
+.product-page{
+grid-template-columns:1fr;
+}
+
+.product-left img{
+height:320px;
+}
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">MarketUI</div>
+
+<nav>
+<a href="#">Acasă</a>
+<a href="#">Produse</a>
+<a href="#">Contact</a>
+</nav>
+
+<div class="search">
+<input id="search" placeholder="Caută produse..." oninput="filter(this.value)">
+<button>🔍</button>
+</div>
+
+<div class="cart" onclick="toggleCart()">
+🛒
+<span class="badge" id="count">0</span>
+</div>
+
+</header>
+
+<div class="hero-slider">
+
+<div class="slides">
+
+<div class="slide active">
+<img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1600&auto=format&fit=crop">
+<div class="caption">
+<h1>Reduceri la Electronice</h1>
+<p>Până la -50% la telefoane și laptopuri</p>
+</div>
+</div>
+
+<div class="slide">
+<img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1600&auto=format&fit=crop">
+<div class="caption">
+<h1>Fashion 2026</h1>
+<p>Cele mai noi colecții disponibile acum</p>
+</div>
+</div>
+
+<div class="slide">
+<img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1600&auto=format&fit=crop">
+<div class="caption">
+<h1>Gaming Zone</h1>
+<p>Console, jocuri și accesorii premium</p>
+</div>
+</div>
+
+</div>
+
+<button class="prev" onclick="moveSlide(-1)">❮</button>
+<button class="next" onclick="moveSlide(1)">❯</button>
+
+</div>
+
+<div class="container">
+
+<div class="sidebar">
+<h3>Categorii</h3>
+<div>Electronice</div>
+<div>Fashion</div>
+<div>Gaming</div>
+<div>IT</div>
+<br>
+<div class="price-filter">
+<h3>Filtru preț</h3>
+
+<input
+ type="range"
+ min="100"
+ max="2100"
+ value="2100"
+ id="priceRange"
+ oninput="filterByPrice(this.value)"
+>
+
+<p>Până la: <span id="priceValue">2100</span> Lei</p>
+</div>
+
+</div>
+
+
+<div class="products" id="products"></div>
+
+</div>
+
+<div class="overlay" onclick="closeCart()"></div>
+
+<div class="cart-box" id="cart">
+
+<div class="close" onclick="closeCart()">×</div>
+
+<h3>Coș cumpărături</h3>
+
+<div id="cartItems"></div>
+
+<div class="total">
+Total: <span id="total">0</span> Lei
+</div>
+
+</div>
+
+<!-- PRODUCT PAGE -->
+
+<div class="product-modal" id="productModal">
+
+<div class="product-page">
+
+<span class="close-product" onclick="closeProduct()">×</span>
+
+<div class="product-left">
+<img id="productImg">
+</div>
+
+<div class="product-right">
+
+<h1 id="productName"></h1>
+
+<div class="product-price" id="productPrice"></div>
+
+<p class="product-desc">
+Produs premium cu design modern și calitate excelentă.
+Ideal pentru utilizare zilnică.
+</p>
+
+<button class="buy-btn" id="buyNowBtn">
+Adaugă în coș
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<footer>
+© 2026 MarketUI - Demo eCommerce
+</footer>
+
+<script>
+
+const products=[];
+
+for(let i=1;i<=18;i++){
+products.push({
+name:"Produs "+i,
+price:Math.floor(Math.random()*2000)+100,
+img:`https://picsum.photos/400?${i}`
+});
+}
+
+let cart=[];
+
+/* RENDER */
+
+function render(list=products){
+
+const box=document.getElementById("products");
+box.innerHTML="";
+
+list.forEach(p=>{
+box.innerHTML+=`
+<div class="product">
+<img src="${p.img}">
+<h4>${p.name}</h4>
+<div class="price">${p.price} Lei</div>
+
+<button class="btn" onclick='openProduct(
+"${p.name}",
+${p.price},
+"${p.img}"
+)'>
+Vezi produs
+</button>
+
+<button class="btn" onclick='add("${p.name}",${p.price})'>
+Adaugă în coș
+</button>
+
+</div>
+`;
+
+
+
+});
+
+}
+
+/* ADD */
+
+function add(name,price){
+cart.push({name,price});
+draw();
+openCart();
+}
+
+/* REMOVE */
+
+function removeItem(i){
+cart.splice(i,1);
+draw();
+openCart(); /* rămâne deschis */
+}
+
+/* DRAW CART */
+
+function draw(){
+
+const box=document.getElementById("cartItems");
+box.innerHTML="";
+
+let total=0;
+
+cart.forEach((p,i)=>{
+total+=p.price;
+
+box.innerHTML+=`
+<div class="item">
+<div>
+<b>${p.name}</b><br>
+${p.price} Lei
+</div>
+
+<button class="remove" onclick="removeItem(${i})">
+X
+</button>
+</div>
+`;
+});
+
+document.getElementById("count").innerText=cart.length;
+document.getElementById("total").innerText=total;
+
+}
+
+/* CART */
+
+function openCart(){
+document.getElementById("cart").classList.add("open");
+document.querySelector(".overlay").classList.add("active");
+}
+
+function closeCart(){
+document.getElementById("cart").classList.remove("open");
+document.querySelector(".overlay").classList.remove("active");
+}
+
+function toggleCart(){
+document.getElementById("cart").classList.toggle("open");
+document.querySelector(".overlay").classList.toggle("active");
+}
+
+/* SEARCH */
+
+function filter(text){
+render(products.filter(p=>
+p.name.toLowerCase().includes(text.toLowerCase())
+));
+}
+
+render();
+draw();
+
+
+/* PRICE FILTER */
+
+function filterByPrice(maxPrice){
+
+maxPrice = Number(maxPrice);
+
+// update text
+ document.getElementById("priceValue").innerText = maxPrice;
+
+// filtrare produse
+ render(products.filter(p => p.price <= maxPrice));
+
+}
+
+/* SLIDER */
+
+let currentSlide = 0;
+
+const slides = document.querySelectorAll(".slide");
+
+function showSlide(index){
+
+slides.forEach(slide=>{
+slide.classList.remove("active");
+});
+
+slides[index].classList.add("active");
+
+}
+
+function moveSlide(direction){
+
+currentSlide += direction;
+
+if(currentSlide >= slides.length){
+currentSlide = 0;
+}
+
+if(currentSlide < 0){
+currentSlide = slides.length - 1;
+}
+
+showSlide(currentSlide);
+
+}
+
+
+/* PRODUCT PAGE */
+
+function openProduct(name,price,img){
+
+document.getElementById("productModal")
+.classList.add("active");
+
+document.getElementById("productName")
+.innerText=name;
+
+document.getElementById("productPrice")
+.innerText=price + " Lei";
+
+document.getElementById("productImg")
+.src=img;
+
+document.getElementById("buyNowBtn")
+.setAttribute(
+"onclick",
+`add("${name}",${price}); closeProduct();`
+);
+
+document.body.style.overflow="hidden";
+
+}
+
+function closeProduct(){
+
+document.getElementById("productModal")
+.classList.remove("active");
+
+document.body.style.overflow="auto";
+
+}
+
+/* AUTO SLIDE */
+
+setInterval(()=>{
+moveSlide(1);
+},4000);
+
+</script>
+
+</body>
+</html>
